@@ -4,11 +4,12 @@ const rootDir    = require('../utils/path');
 
 const router  = express.Router()
 
+const adminData = require('./admin');
 
 
 router.get('/',(req,res,next)=>{
-    console.log("Second Middleware");
-    res.sendFile(path.join(rootDir,'views','outler.html'));
+    const products = adminData.products;
+    res.render('outler',{prods:products, path:'/',pageTitle:"Home"});
 });
  
 
