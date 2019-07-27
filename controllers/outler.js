@@ -26,21 +26,43 @@ exports.getIndex = (req,res,next)=>{
 
 
 exports.getCart = (req,res,next) =>{
-    res.render('outler/cart',{path:'/cart', pageTitle:"Cart"});
+    Cart.getCart(cart =>{
+        Product.fetchAll(products =>{
+            const cartProducts = [];
+            for (product of products){
+                const cartProductData = cart.products.find(prod => prod.id === product.id);
+                if (cartProductData){
+                    cartProducts.push({productData:product, qty:cartProductData.qty});
+                }
+            }
+            res.render('outler/cart',{path:'/cart', pageTitle:"Cart",products:cartProducts});
+        });
+    });
+    
 }
 
-exports.postCart = (req,res,next) =>{
+exports.postCart = (req, res, next) => {
     const prodId = req.body.productId;
-    Product.findById(prodId, (product) =>{
-            Cart.addProduct(prodId,product.price);
-    })
-    res.render('outler/cart',{path:'/cart', pageTitle:"Cart"});
-}
+    Product.findById(prodId, product => {
+      Cart.addProduct(prodId, product.price);
+    });
+    res.redirect('/cart');
+  };
+
+
+exports.postCartDeleteProduct = (req,res,next) =>{
+    const prodId = req.body.productId;
+    Product.findById(prodId, product =>{
+        Cart.deleteProduct(prodId, product.price);
+        res.redirect('/cart');
+    });
+    
+};
 
 exports.getCheckout = (req,res,next) =>{
     res.render('outler/checkout',{path:'/checkout', pageTitle:"Checkout"});
-}
+};
 
 exports.getOrders = (req,res,next) =>{
     res.render('outler/orders',{path:'/orders', pageTitle:"Orders"});
-}
+};
